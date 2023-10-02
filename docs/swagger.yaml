@@ -1,0 +1,179 @@
+definitions:
+  dto.CreateOtpDto:
+    properties:
+      channel:
+        type: string
+      contact:
+        type: string
+      device:
+        $ref: '#/definitions/dto.Device'
+      otp_type:
+        type: string
+      user_reference:
+        type: string
+    required:
+    - channel
+    - contact
+    - device
+    - otp_type
+    - user_reference
+    type: object
+  dto.Device:
+    properties:
+      brand:
+        type: string
+      device_reference:
+        type: string
+      imei:
+        maxLength: 50
+        minLength: 10
+        type: string
+      model:
+        type: string
+      type:
+        type: string
+    required:
+    - brand
+    - device_reference
+    - imei
+    - model
+    - type
+    type: object
+  dto.ValidateOtpDto:
+    properties:
+      contact:
+        type: string
+      device:
+        $ref: '#/definitions/dto.Device'
+      otp:
+        type: string
+      otp_type:
+        type: string
+      user_reference:
+        type: string
+    type: object
+  helper.ErrorResponse:
+    properties:
+      code:
+        type: integer
+      error_reference:
+        type: string
+      error_type:
+        type: string
+      errors:
+        items:
+          type: string
+        type: array
+      timestamp:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /api/otp:
+    post:
+      consumes:
+      - application/json
+      description: Create an OTP
+      parameters:
+      - description: OTP request body
+        in: body
+        name: requestBody
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateOtpDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helper.ErrorResponse'
+      summary: Create OTP
+      tags:
+      - OTP
+  /api/otp/{user-reference}:
+    put:
+      consumes:
+      - application/json
+      description: Validate an OTP
+      parameters:
+      - description: User reference
+        in: path
+        name: user_reference
+        required: true
+        type: string
+      - description: OTP request body
+        in: body
+        name: requestBody
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ValidateOtpDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helper.ErrorResponse'
+      summary: Validate OTP
+      tags:
+      - OTP
+  /api/otp/{user_reference}/{device_reference}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve the last OTP for a user and device
+      parameters:
+      - description: User reference
+        in: path
+        name: user_reference
+        required: true
+        type: string
+      - description: Device reference
+        in: path
+        name: device_reference
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helper.ErrorResponse'
+      summary: Get the last OTP
+      tags:
+      - OTP
+  /api/otp/key:
+    post:
+      consumes:
+      - application/json
+      description: Generate a new OTP key
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helper.ErrorResponse'
+      summary: Create OTP Key
+      tags:
+      - OTP
+swagger: "2.0"
